@@ -4,17 +4,17 @@
     <i, j, k> no pertany a {<u, v, w> | u >= 0 ^ v >= 0 ^ w >= 0}
     o a {<-1, 0, 0>,  <-1,-1,-1>}. */
 ubicacio::ubicacio(int i, int j, int k) throw(error) {
-    if((i != -1 and j != 0 and k != 0) or
-     (i != -1 and j != -1 and k != -1) or
-     i >= 0 or 
-     j >= 0 or
-     k >= 0) {
-        throw error(UbicacioIncorrecta);
-    }
-    else {
+    if((i == -1 and j == 0 and k == 0) or
+    (i == -1 and j == -1 and k == -1) or
+    i >= 0 or
+    j >= 0 or
+    k >= 0) {
         _i = i;
         _j = j;
         _k = k;
+    }
+    else {
+        throw error(UbicacioIncorrecta);
     }
 }
 
