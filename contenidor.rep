@@ -1,0 +1,2 @@
+string _matr; //Matricula del contenidor
+nat _l; // Longitud del contenidor
