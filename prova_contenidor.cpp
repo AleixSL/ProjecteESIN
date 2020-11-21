@@ -5,6 +5,7 @@ using namespace std;
 
 int main() {
     contenidor c1("ABCD23", 10);
+    contenidor c4("ABCD23", 20);
     contenidor c2("AB53", 20);
 
     cout << "Longitud c1: " << c1.longitud() << endl;
@@ -22,4 +23,13 @@ int main() {
 
     cout << "c1 i c2 son iguals: " << (c1 == c2) << endl;
     cout << "c1 i c2 son diferents: " << (c1 != c2) << endl;
+
+    cout << "c1 < c3: " << (c1 < c3) << endl;
+    cout << "c1 > c3: " << (c1 > c3) << endl;  
+    cout << "c3 < c1: " << (c3 < c1) << endl;
+    cout << "c3 > c1: " << (c3 > c1) << endl;
+    cout << "c4 < c1: " << (c4 < c1) << endl;
+    cout << "c4 > c1: " << (c4 > c1) << endl;
+    cout << "c1 < c4: " << (c1 < c4) << endl;
+    cout << "c1 > c4: " << (c1 > c4) << endl;
 }

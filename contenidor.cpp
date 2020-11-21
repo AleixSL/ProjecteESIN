@@ -70,14 +70,62 @@ bool contenidor::operator!=(const contenidor &c) const throw() {
     return !(*this == c);
 }
 bool contenidor::operator<(const contenidor &c) const throw() {
-    // if(*this != c) {
-
-    // }
+    int i = 0, mida = _matr.size(), midac = c._matr.size();
+    bool menor = true, menorlong, iguals = true, ultim = false;
+    if(*this != c) {
+        while((i < mida or i < midac) and (not menor or iguals)) {
+            ultim = (i + 1 == mida) or (i + 1 == midac);
+            iguals = (int)_matr[i] == (int)c._matr[i];
+            menor = (int)_matr[i] < (int)c._matr[i];
+            if(ultim) {
+                menor = (int)_matr[i] < (int)c._matr[i];
+            }
+            ++i;
+        }
+        if(not menor) {
+            i = 0;
+            iguals = true;
+            while(i < mida and iguals) {
+                iguals = (int)_matr[i] == (int)c._matr[i];
+                ++i;
+            }
+        }
+        if(_l < c._l and iguals) menorlong = true;
+        else menorlong = false;
+        return menor or menorlong;
+    }
+    else return false;
 }
-bool contenidor::operator<=(const contenidor &c) const throw() {}
+bool contenidor::operator<=(const contenidor &c) const throw() {
+    return (*this > c);
+}
 bool contenidor::operator>(const contenidor &c) const throw() {
-    // if(*this != c) {
-
-    // }
+    int i = 0, mida = _matr.size(), midac = c._matr.size();
+    bool major = true, majorlong, iguals = true, ultim = false;
+    if(*this != c) {
+        while((i < mida or i < midac) and (not major or iguals)) {
+            ultim = (i + 1 == mida) or (i + 1 == midac);
+            iguals = (int)_matr[i] == (int)c._matr[i];
+            major = (int)_matr[i] > (int)c._matr[i];
+            if(ultim) {
+                major = (int)_matr[i] > (int)c._matr[i];
+            }
+            ++i;
+        }
+        if(not major) {
+            i = 0;
+            iguals = true;
+            while(i < mida and iguals) {
+                iguals = (int)_matr[i] == (int)c._matr[i];
+                ++i;
+            }
+        }
+        if(_l > c._l and iguals) majorlong = true;
+        else majorlong = false;
+        return major or majorlong;
+    }
+    else return false;
 }
-bool contenidor::operator>=(const contenidor &c) const throw() {}
+bool contenidor::operator>=(const contenidor &c) const throw() {
+    return (*this < c);
+}
