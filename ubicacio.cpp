@@ -78,14 +78,7 @@ bool ubicacio::operator<(const ubicacio &u) const throw() {
     return menor;
 }
 bool ubicacio::operator<=(const ubicacio &u) const throw() {
-    bool menorig;
-    if(_i <= u._i or
-    (_i == u._i and _j <= u._j) or
-    (_i == u._i and _j == u._j and _k <= u._k)) {
-        menorig = true;
-    }
-    else menorig = false;
-    return menorig;
+    return !(*this > u);
 }
 bool ubicacio::operator>(const ubicacio &u) const throw() {
     bool major;
@@ -98,12 +91,5 @@ bool ubicacio::operator>(const ubicacio &u) const throw() {
     return major;
 }
 bool ubicacio::operator>=(const ubicacio &u) const throw() {
-    bool majorig;
-    if(_i >= u._i or
-    (_i == u._i and _j >= u._j) or
-    (_i == u._i and _j == u._j and _k >= u._k)) {
-        majorig = true;
-    }
-    else majorig = false;
-    return majorig;
+    return !(*this < u);
 }

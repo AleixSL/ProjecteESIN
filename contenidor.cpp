@@ -97,7 +97,7 @@ bool contenidor::operator<(const contenidor &c) const throw() {
     else return false;
 }
 bool contenidor::operator<=(const contenidor &c) const throw() {
-    return (*this > c);
+    return !(*this > c);
 }
 bool contenidor::operator>(const contenidor &c) const throw() {
     int i = 0, mida = _matr.size(), midac = c._matr.size();
@@ -127,5 +127,5 @@ bool contenidor::operator>(const contenidor &c) const throw() {
     else return false;
 }
 bool contenidor::operator>=(const contenidor &c) const throw() {
-    return (*this < c);
+    return !(*this < c);
 }

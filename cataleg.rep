@@ -1,0 +1,15 @@
+// Aquesta classe tindrà l'estructura d'un diccionari, ja que usa una clau i un valor per a estar ordenat. Crec que la millor manera de representar-lo és com un AVL.
+
+struct node {
+    node *_fesq;
+    node *_fdret;
+    string _c;
+    Valor _v;
+};
+
+node *_arrel;
+nat _mida;
+
+static node* copia_cat(node *n);
+static void esborra_nodes(node *n);
+static node* consulta_cat(node *n, const string &c);
