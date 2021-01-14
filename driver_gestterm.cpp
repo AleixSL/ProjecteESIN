@@ -64,26 +64,26 @@ void* user_init(gen_driver& dr) {
   if (tid == "contenidor") {
     if (dr.nargs()==4) {
       if (util::toint(dr.args(4)) < 0) {
-	throw error(gen_driver::WrongTypeArgs, gen_driver::nom_mod, 
-		    gen_driver::WrongTypeArgsMsg);
+  throw error(gen_driver::WrongTypeArgs, gen_driver::nom_mod, 
+        gen_driver::WrongTypeArgsMsg);
       }
       nat longi = static_cast<nat> (util::toint(dr.args(4)));
       return static_cast<void*>(new contenidor(dr.args(3), longi));
     }
     else {
       throw error(gen_driver::WrongNumArgs, gen_driver::nom_mod,
-		  gen_driver::WrongNumArgsMsg);
+      gen_driver::WrongNumArgsMsg);
     }
   }
   else if (tid == "ubicacio") {
     if (dr.nargs()==5) {
       return static_cast<void*>(new ubicacio(util::toint(dr.args(3)),
-					     util::toint(dr.args(4)), 
-					     util::toint(dr.args(5)))); 
+               util::toint(dr.args(4)), 
+               util::toint(dr.args(5)))); 
     }
     else {
       throw error(gen_driver::WrongNumArgs, gen_driver::nom_mod,
-		  gen_driver::WrongNumArgsMsg);
+      gen_driver::WrongNumArgsMsg);
     }
   }
   else if (tid == "cataleg<int>") {
@@ -92,15 +92,15 @@ void* user_init(gen_driver& dr) {
     }
     else {
       throw error(gen_driver::WrongNumArgs, gen_driver::nom_mod,
-		  gen_driver::WrongNumArgsMsg);
+      gen_driver::WrongNumArgsMsg);
     }
   }
   else if (tid == "terminal") {
     if (dr.nargs()==5) {
       if ((util::toint(dr.args(3)) < 0) or (util::toint(dr.args(4)) < 0) or
-	  (util::toint(dr.args(5)) < 0)) {
-	throw error(gen_driver::WrongTypeArgs, gen_driver::nom_mod, 
-		    gen_driver::WrongTypeArgsMsg);
+    (util::toint(dr.args(5)) < 0)) {
+  throw error(gen_driver::WrongTypeArgs, gen_driver::nom_mod, 
+        gen_driver::WrongTypeArgsMsg);
       }
       nat n = static_cast<nat> (util::toint(dr.args(3)));
       nat m = static_cast<nat> (util::toint(dr.args(4)));
@@ -109,29 +109,29 @@ void* user_init(gen_driver& dr) {
     }
     else if (dr.nargs()==6) {
       if ((util::toint(dr.args(3)) < 0) or (util::toint(dr.args(4)) < 0) or
-	  (util::toint(dr.args(5)) < 0)) {
-	throw error(gen_driver::WrongTypeArgs, gen_driver::nom_mod, 
-		    gen_driver::WrongTypeArgsMsg);
+    (util::toint(dr.args(5)) < 0)) {
+  throw error(gen_driver::WrongTypeArgs, gen_driver::nom_mod, 
+        gen_driver::WrongTypeArgsMsg);
       }
       nat n = static_cast<nat> (util::toint(dr.args(3)));
       nat m = static_cast<nat> (util::toint(dr.args(4)));
       nat h = static_cast<nat> (util::toint(dr.args(5)));
       terminal::estrategia estrat;
       if (dr.args(6)=="FIRST_FIT") {
-	estrat = terminal::FIRST_FIT;
+  estrat = terminal::FIRST_FIT;
       }
       else if (dr.args(6)=="LLIURE") {
-	estrat = terminal::LLIURE;
+  estrat = terminal::LLIURE;
       }
       return static_cast<void*>(new terminal(n, m, h, estrat));
     }
     else {
       throw error(gen_driver::WrongNumArgs,gen_driver::nom_mod,
-		  gen_driver::WrongNumArgsMsg);
+      gen_driver::WrongNumArgsMsg);
     }
   }
   throw error(gen_driver::WrongTypeArgs,gen_driver::nom_mod,
-	      gen_driver::WrongTypeArgsMsg);
+        gen_driver::WrongTypeArgsMsg);
 }
 
 /* TypeTraits */
@@ -185,7 +185,7 @@ void tracta_menor(gen_driver& dr) {
   }
   else {
     throw error(gen_driver::WrongTypeArgs, gen_driver::nom_mod, 
-		gen_driver::WrongTypeArgsMsg);
+    gen_driver::WrongTypeArgsMsg);
   }
 }
 
@@ -202,7 +202,7 @@ void tracta_major(gen_driver& dr) {
   }
   else {
     throw error(gen_driver::WrongTypeArgs, gen_driver::nom_mod, 
-		gen_driver::WrongTypeArgsMsg);
+    gen_driver::WrongTypeArgsMsg);
   }
 }
 
@@ -219,7 +219,7 @@ void tracta_igual(gen_driver& dr) {
   }
   else
     throw error(gen_driver::WrongTypeArgs, gen_driver::nom_mod, 
-		gen_driver::WrongTypeArgsMsg);
+    gen_driver::WrongTypeArgsMsg);
 }
 
 void tracta_no_igual(gen_driver& dr) {
@@ -235,7 +235,7 @@ void tracta_no_igual(gen_driver& dr) {
   }
   else
     throw error(gen_driver::WrongTypeArgs, gen_driver::nom_mod, 
-		gen_driver::WrongTypeArgsMsg);
+    gen_driver::WrongTypeArgsMsg);
 }
 
 void tracta_menor_igual(gen_driver& dr) {
@@ -251,7 +251,7 @@ void tracta_menor_igual(gen_driver& dr) {
   }
   else
     throw error(gen_driver::WrongTypeArgs, gen_driver::nom_mod, 
-		gen_driver::WrongTypeArgsMsg);
+    gen_driver::WrongTypeArgsMsg);
 }
 
 void tracta_major_igual(gen_driver& dr) {
@@ -267,7 +267,7 @@ void tracta_major_igual(gen_driver& dr) {
   }
   else {
     throw error(gen_driver::WrongTypeArgs, gen_driver::nom_mod, 
-		gen_driver::WrongTypeArgsMsg);
+    gen_driver::WrongTypeArgsMsg);
   }
 }
 
@@ -398,19 +398,19 @@ void tracta_mapa(gen_driver& dr) {
     for (int k=(int)t->num_pisos()-1; k >= 0; --k) {
       dr.get_ostream() << "pis " << k << ' ';
       for (nat j=0; j < t->num_places(); ++j) {
-	ubicacio u(i, j, k);
-	string m = "";
-	t->contenidor_ocupa(u, m);
-	string out(3, ' ');
-	if (m == "" and k == 0) {
-	  out = string(3, '_');
-	}
-	else {
-	  for (nat x=0; x<m.length() and x<3; ++x) {
-	    out[x] = m[x];
-	  }
-	}
-	dr.get_ostream() << " " << out;
+  ubicacio u(i, j, k);
+  string m = "";
+  t->contenidor_ocupa(u, m);
+  string out(3, ' ');
+  if (m == "" and k == 0) {
+    out = string(3, '_');
+  }
+  else {
+    for (nat x=0; x<m.length() and x<3; ++x) {
+      out[x] = m[x];
+    }
+  }
+  dr.get_ostream() << " " << out;
       }
       dr.get_ostream() << endl;
     }
@@ -418,12 +418,12 @@ void tracta_mapa(gen_driver& dr) {
     for (nat i=0; i < t->num_places(); ++i) {
       string s = util::tostring((int) i);
       if (s.length() > 3) {
-	s = s.substr(0, 3);
+  s = s.substr(0, 3);
       }
       else {
-	for (int x=s.length(); x < 3; ++x) {
-	  s = s + ' ';
-	}
+  for (int x=s.length(); x < 3; ++x) {
+    s = s + ' ';
+  }
       }
       dr.get_ostream() << ' ' << s;
     }

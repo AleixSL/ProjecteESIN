@@ -5,11 +5,42 @@ struct node {
     node *_fdret;
     string _c;
     Valor _v;
+    int _altura;
 };
 
 node *_arrel;
 nat _mida;
+nat _elems;
 
+// Inserció recursiva de la clau k i el valor v.
+static node* insereix_node(node *n, const string &k, const Valor &v);
+
+// Compara dos valors per a saber quin és el màxim. L'usem per a saber quina altura és més gran.
+static int max(int a, int b);
+
+// Retorna l'altura d'un node.
+static int altura(node *n);
+
+// Obté el balanç del subarbre donat.
+static int obteBalanc(node *n);
+
+// Rota el subarbre cap a la dreta.
+static node* rotaDreta(node *n);
+
+// Rota el subarbre cap a l'esquerra.
+static node* rotaEsq(node *n);
+
+// Eliminació recursiva del node amb clau k.
+static node* elimina_node(node *n, const string &k);
+
+// Retorna el valor minim
+static node* valMin(node *n);
+
+// Copia del catàleg recursiva.
 static node* copia_cat(node *n);
+
+// Esborra nodes recursivament.
 static void esborra_nodes(node *n);
+
+// Consulta una clau recursivament.
 static node* consulta_cat(node *n, const string &c);

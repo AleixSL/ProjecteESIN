@@ -1,0 +1,62 @@
+Planificació terminal:
+
+Amb la següent estructura:
+
+ - catàleg				 -> amb matrícules i ubicacions
+ - àrea d'emmagatzematge -> array tridimensional 
+ - àrea d'espera		 -> std list
+ - espais buits àrea	 -> array??
+
+	- insereix_contenidor: Ens passen un contenidor. Hem de mirar la mida de la terminal: Si _quants >= a _mida el posem a l'area d'espera.
+						   Sinó, mirem l'estrategia de la terminal i mirem d'inserir-lo a l'area d'emmagatzematge. Si no hi cap, el posem a
+						   l'àrea d'espera. Un cop sabem l'ubicació d'on l'hem posat, el guardem al catàleg. També caldrà mirar si ara els
+						   contenidors de l'àrea d'espera poden cabre a l'àrea d'emmagatzematge.
+						   
+						   Cost constant crec? (si catàleg és hash table, si és avl és log n)
+
+						   Throw errors: MatriculaDuplicada. Caldrà mirar si ja existeix al catàleg.
+
+
+    - retira_contenidor: Ens donen una matrícula. Hem de buscar la ubicació a catàleg amb la matrícula. Eliminem el node de catàleg i busquem 
+    					 a la ubi que tenim i l'eliminem (de l'area d'espera o emmagatzematge). Si s'han mogut contenidors a l'àrea d'espera 
+    					 per a poder treure el contenidor, caldrà tornar-los a posar. Llavors també haurem de modificar el catàleg.
+    					 
+    					 Cost constant crec? (si catàleg és hash table, si és avl és log n)
+
+    					 Throw errors: MatriculaInexistent. Si no troba res a catàleg.
+
+
+    - on:	Ens passen una matrícula. Busquem la ubicació a catàleg amb la matrícula. 
+
+    		Cost constant crec? (si catàleg és hash table, si és avl és log n)
+
+    		Throw errors: Res
+
+
+    - longitud: Ens passen matrícula. Primer busquem la ubicació dins de catàleg. Tot seguit anem a la ubi on es troba i agafem la longitud del
+    			contenidor. 
+
+    			Cost constant crec? (si catàleg és hash table, si és avl és log n)
+
+    			Throw errors: MatriculaInexistent. Si no troba res a catàleg.
+
+
+    - contenidor_ocupa: Ens donen una ubicació. Retorna la matrícula del contenidor que ocupa la ubicació. Vigilar que la ubi donada potser no 
+    					és el lloc on comença el contenidor!! 
+
+    					Crec que tindrà cost constant.
+
+    					Throw errors: UbicacioNoMagatzem. Si la ubicació passada és de l'àrea d'espera.
+    								  NumFileresIncorr, NumPlacesIncorr i AlcadaMaxIncorrecta tmb???
+
+
+Amb l'estructura que tenim ara:
+
+ - hash table amb ubicació i contenidor. És l'àrea d'emmagatzematge.
+ - un catàleg on hi guardem les matrícules i les ubis
+ - àrea d'espera amb std list
+
+ 	Ve a ser el mateix, però estem fent una hash table quan potser no fa falta, ja que a l'àrea d'emmagatzematge ho guardem per ubicacions, no per
+ 	matrícules. Amb això vull dir que no hauriem d'usar una funció de hash, ja que hauriem de buscar el lloc recorrent la hash table i buscant un
+ 	espai lliure (No tenim un lloc on ens diu quins estan buits). Amb aquesta array d'espais buits, crec que ens treuria costos, doncs sinó hauriem 
+ 	de recorrer totes les posicions. 
