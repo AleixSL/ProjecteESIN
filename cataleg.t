@@ -1,7 +1,9 @@
 #include "cataleg.hpp"
 
 /* Constructora. Crea un catàleg buit on numelems és el nombre
-    aproximat d'elements que com a màxim s'inseriran al catàleg. */
+    aproximat d'elements que com a màxim s'inseriran al catàleg. 
+    Cost: O(1)
+*/
 template <typename Valor>
 cataleg<Valor>::cataleg(nat numelems) throw(error) {
     _arrel = NULL;
@@ -9,7 +11,9 @@ cataleg<Valor>::cataleg(nat numelems) throw(error) {
     _elems = 0;
 }
 
-/* Constructora per còpia, assignació i destructora. */
+/* Constructora per còpia, assignació i destructora. 
+   Cost: O(h) on h = altura de l'arrel
+*/
 template <typename Valor>
 cataleg<Valor>::cataleg(const cataleg& c) throw(error) {
     _arrel = copia_cat(c._arrel);
@@ -17,19 +21,19 @@ cataleg<Valor>::cataleg(const cataleg& c) throw(error) {
     _elems = c._elems;
 }
 
+// Cost: O(h) on h = altura de l'arrel
 template <typename Valor>
 cataleg<Valor>& cataleg<Valor>::operator=(const cataleg& c) throw(error) {
-    //if(this != c) {
-        node *aux;
-        aux = copia_cat(c._arrel);
-        esborra_nodes(_arrel);
-        _arrel = aux;
-        _mida = c._mida;
-        _elems = c._elems;
-    //}
+    node *aux;
+    aux = copia_cat(c._arrel);
+    esborra_nodes(_arrel);
+    _arrel = aux;
+    _mida = c._mida;
+    _elems = c._elems;
     return(*this);
 }
 
+// Cost: O(h) on h = altura de l'arrel
 template <typename Valor>
 cataleg<Valor>::~cataleg() throw() {
     esborra_nodes(_arrel);
@@ -37,7 +41,9 @@ cataleg<Valor>::~cataleg() throw() {
 
 /* Mètode modificador. Insereix el parell <clau, valor> indicat.
     En cas que la clau k ja existeixi en el catàleg actualitza el valor
-    associat. Genera un error en cas que la clau sigui l'string buit. */
+    associat. Genera un error en cas que la clau sigui l'string buit. 
+    Cost: O(log n)
+*/
 template <typename Valor>
 void cataleg<Valor>::assig(const string &k, const Valor &v) throw(error) {
     if(k == "") throw error(ClauStringBuit);
@@ -49,7 +55,9 @@ void cataleg<Valor>::assig(const string &k, const Valor &v) throw(error) {
 }
 
 /* Elimina del catàleg el parell que té com a clau k.
-    En cas que la clau k no existeixi en el catàleg genera un error. */
+    En cas que la clau k no existeixi en el catàleg genera un error. 
+    Cost: O(log n) 
+*/
 template <typename Valor>
 void cataleg<Valor>::elimina(const string &k) throw(error) {
     if(not existeix(k)) throw error(ClauInexistent);
@@ -60,7 +68,9 @@ void cataleg<Valor>::elimina(const string &k) throw(error) {
 }
 
 /* Retorna true si i només si la clau k existeix dins del catàleg; false
-    en cas contrari. */
+    en cas contrari. 
+    Cost: O(log n) 
+*/
 template <typename Valor>
 bool cataleg<Valor>::existeix(const string &k) const throw() {
     bool trobat;
@@ -74,7 +84,10 @@ bool cataleg<Valor>::existeix(const string &k) const throw() {
     clau k llavors genera un error. Exemple:
     cataleg<int> ct;
     ...
-    int n = ct["dia"]; */
+    int n = ct["dia"]; 
+    
+    Cost: O(log n)
+*/
 template <typename Valor>
 Valor cataleg<Valor>::operator[](const string &k) const throw(error) {
     node *n = consulta_cat(_arrel, k);
@@ -83,7 +96,9 @@ Valor cataleg<Valor>::operator[](const string &k) const throw(error) {
 }
 
 /* Retorna el nombre d'elements que s'han inserit en el catàleg
-    fins aquest moment. */
+    fins aquest moment. 
+    Cost: O(1)
+*/
 template <typename Valor>
 nat cataleg<Valor>::quants() const throw() {
     return _elems;
@@ -93,6 +108,7 @@ nat cataleg<Valor>::quants() const throw() {
 
 // Mètodes privats
 
+//Cost: O(log n)
 template <typename Valor>
 typename cataleg<Valor>::node* cataleg<Valor>::insereix_node(node *n, const string &k, const Valor &v) {
     if(n == NULL) {
@@ -101,7 +117,9 @@ typename cataleg<Valor>::node* cataleg<Valor>::insereix_node(node *n, const stri
         nou->_v = v;
         nou->_fesq = NULL;
         nou->_fdret = NULL;
+        nou->_altura = 1;
         n = nou;
+        return n;
     }
     if(k < n->_c) {
         n->_fesq = insereix_node(n->_fesq, k, v);
@@ -111,7 +129,10 @@ typename cataleg<Valor>::node* cataleg<Valor>::insereix_node(node *n, const stri
         n->_fdret = insereix_node(n->_fdret, k, v);
         n->_altura = 1 + max(altura(n->_fesq), altura(n->_fdret));
     }
-    else if(k == n->_c) n->_v = v;
+    else if(k == n->_c) {
+        n->_v = v;
+        return n;
+    }
 
 
     // Equilibrem l'AVL. Primer calculem el balanç. Després mirem els possibles casos.
@@ -138,13 +159,13 @@ typename cataleg<Valor>::node* cataleg<Valor>::insereix_node(node *n, const stri
 
 }
 
-
+// Cost: O(1)
 template <typename Valor>
 int cataleg<Valor>::max(int a, int b) {
     return (a > b)? a : b;
 }
 
-
+// Cost: O(1)
 template <typename Valor>
 int cataleg<Valor>::altura(node *n) {
     int x = 0;
@@ -152,7 +173,7 @@ int cataleg<Valor>::altura(node *n) {
     return x;
 }
 
-
+// Cost: O(1)
 template <typename Valor>
 int cataleg<Valor>::obteBalanc(node *n) {
     int i = 0;
@@ -160,7 +181,7 @@ int cataleg<Valor>::obteBalanc(node *n) {
     return i;
 }
 
-
+// Cost: O(1)
 template <typename Valor>
 typename cataleg<Valor>::node* cataleg<Valor>::rotaDreta(node *n) {
     node *esq = n->_fesq;
@@ -169,13 +190,13 @@ typename cataleg<Valor>::node* cataleg<Valor>::rotaDreta(node *n) {
     esq->_fdret = n;
     n->_fesq = esqdret;
 
-    n->_altura = max(altura(n->_fesq), altura(n->_fdret) + 1);
-    esq->_altura = max(altura(esq->_fesq), altura(esq->_fdret) + 1);
+    n->_altura = max(altura(n->_fesq), altura(n->_fdret)) + 1;
+    esq->_altura = max(altura(esq->_fesq), altura(esq->_fdret)) + 1;
 
     return esq;
 }
 
-
+// Cost: O(1)
 template <typename Valor>
 typename cataleg<Valor>::node* cataleg<Valor>::rotaEsq(node *n) {
     node *dret = n->_fdret;
@@ -184,13 +205,13 @@ typename cataleg<Valor>::node* cataleg<Valor>::rotaEsq(node *n) {
     dret->_fesq = n;
     n->_fdret = dresq;
 
-    n->_altura = max(altura(n->_fesq), altura(n->_fdret) + 1);
-    dret->_altura = max(altura(dret->_fesq), altura(dret->_fdret) + 1);
+    n->_altura = max(altura(n->_fesq), altura(n->_fdret)) + 1;
+    dret->_altura = max(altura(dret->_fesq), altura(dret->_fdret)) + 1;
 
     return dret;
 }
 
-
+// Cost: O(log n)
 template <typename Valor>
 typename cataleg<Valor>::node* cataleg<Valor>::elimina_node(node *n, const string &k) {
     if(n == NULL) return n;
@@ -245,7 +266,7 @@ typename cataleg<Valor>::node* cataleg<Valor>::elimina_node(node *n, const strin
     return n;
 }
 
-
+// Cost: O(n)
 template <typename Valor>
 typename cataleg<Valor>::node* cataleg<Valor>::valMin(node *n) {
     node *act = n;
@@ -255,7 +276,7 @@ typename cataleg<Valor>::node* cataleg<Valor>::valMin(node *n) {
     return act;
 }
 
-
+// Cost: O(h) on h = altura del node n
 template <typename Valor>
 typename cataleg<Valor>::node* cataleg<Valor>::copia_cat(node *n) {
     node *p;
@@ -271,7 +292,7 @@ typename cataleg<Valor>::node* cataleg<Valor>::copia_cat(node *n) {
     return p;
 }
 
-
+// Cost: O(log n)
 template <typename Valor>
 void cataleg<Valor>::esborra_nodes(node *n) {
     if(n != NULL) {
@@ -281,7 +302,7 @@ void cataleg<Valor>::esborra_nodes(node *n) {
     }
 }
 
-
+// Cost: O(log n)
 template <typename Valor>
 typename cataleg<Valor>::node* cataleg<Valor>::consulta_cat(node *n, const string &c) {
     node *res = n;

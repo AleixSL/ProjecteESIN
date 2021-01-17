@@ -5,6 +5,8 @@ using namespace std;
     Es produeix un error si m no és una seqüència de un o més caràcters,
     formada exclusivament per lletres majúscules i dígits,
     o si l no pertany a {10, 20, 30} */
+
+// Cost: O(n)
 contenidor::contenidor(const string &m, nat l) throw(error) {
     int i = 0, mida = m.length();
     bool esNum = true, esMaj = true, correcte = true;
@@ -25,10 +27,14 @@ contenidor::contenidor(const string &m, nat l) throw(error) {
 }
 
 /* Constructora per còpia, assignació i destructora. */
+
+// Cost: O(1)
 contenidor::contenidor(const contenidor &u) throw(error) {
     _matr = u._matr;
     _l = u._l;
 }
+
+// Cost: O(1)
 contenidor& contenidor::operator=(const contenidor &u) throw(error) {
     if(this != &u) {
         _matr = u._matr;
@@ -36,13 +42,18 @@ contenidor& contenidor::operator=(const contenidor &u) throw(error) {
     }
     return *this;
 }
+
 contenidor::~contenidor() throw() {}
 
 /* Consultors. Retornen respectivament la longitud i la matrícula del
     contenidor. */
+
+// Cost: O(1)
 nat contenidor::longitud() const throw() {
     return _l;
 }
+
+// Cost: O(1)
 string contenidor::matricula() const throw() {
     return _matr;
 }
@@ -54,6 +65,8 @@ string contenidor::matricula() const throw() {
     dues matrícules són iguals i la longitud del paràmetre implícit és més
     petita que la de c. La resta d'operadors es defineixen consistentment
     respecte a <. */
+
+// Cost: O(n)
 bool contenidor::operator==(const contenidor &c) const throw() {
     bool iguals = true;
     int i = 0, mida = _matr.size(), midac = c._matr.size();
@@ -66,9 +79,13 @@ bool contenidor::operator==(const contenidor &c) const throw() {
     else iguals = false;
     return iguals;
 }
+
+// Cost: O(n)
 bool contenidor::operator!=(const contenidor &c) const throw() {
     return !(*this == c);
 }
+
+// Cost: O(n)
 bool contenidor::operator<(const contenidor &c) const throw() {
     int i = 0, mida = _matr.size(), midac = c._matr.size();
     bool menor = true, menorlong, iguals = true, ultim = false;
@@ -96,9 +113,13 @@ bool contenidor::operator<(const contenidor &c) const throw() {
     }
     else return false;
 }
+
+// Cost: O(n)
 bool contenidor::operator<=(const contenidor &c) const throw() {
     return !(*this > c);
 }
+
+// Cost: O(n)
 bool contenidor::operator>(const contenidor &c) const throw() {
     int i = 0, mida = _matr.size(), midac = c._matr.size();
     bool major = true, majorlong, iguals = true, ultim = false;

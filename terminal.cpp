@@ -1,33 +1,83 @@
 #include "terminal.hpp"
 
+struct sort_by_name {
+  bool operator()(string a, string b)
+  { return a < b; }
+};
+
 /* Constructora. Crea una terminal buida amb n fileres de m places
     cadascuna, i una alçada màxima d'apilament h; a més fixa l'estratègia
     d'inserció i retirada dels contenidors respecte el paràmetre st.
     Genera un error si n=0, m=0, h=0, h > HMAX o
     st no pertany a {FIRST_FIT, LLIURE}. */
+
+// Cost: O(n)
 terminal::terminal(nat n, nat m, nat h, estrategia st) throw(error){
     if(n == 0) throw error(NumFileresIncorr);
     if(m == 0) throw error(NumPlacesIncorr);
     if(h == 0 or h > HMAX) throw error(AlcadaMaxIncorr);
-    if(st != FIRST_FIT or st != LLIURE) throw error(EstrategiaIncorr);
+    if(st != FIRST_FIT or st != LLIURE or not st) throw error(EstrategiaIncorr);
     _alc = h;
     _prof = m;
     _fil = n;
-    _st = st;
+    if(not st) {
+        _st = FIRST_FIT;
+    }
+    else _st = st;
     _mida = n*m*h;
-    _taula = new node_hash*[_mida];
-    _cat = new cataleg<int>(_mida); 
+    for(int i = 0; i < _mida; ++i) {
+        _taula[i] = NULL;
+    }
+    _cat = new cataleg<ubicacio>(_mida); 
     _quants = 0;
     _num_ops = 0;
+
 }
 
 /* Constructora per còpia, assignació i destructora. */
+
+// Cost: O(n)
 terminal::terminal(const terminal& b) throw(error){
-    (void)b;
+    _alc = b._alc;
+    _prof = b._prof;
+    _fil = b._fil;
+    _st = b._st;    
+    
+    nodeterm **_taux = new nodeterm*[b._mida];
+    int i = 0;
+    while(i < b._mida) {
+        _taux[i] = b._taula[i];
+        ++i;
+    }
+    _taula = _taux;
+
+    _mida = b._mida;
+    _cat = b._cat;
+    _quants = b._quants;
+    _num_ops = b._num_ops;
+    _espera = b._espera;
 }
 
+// Cost: O(n)
 terminal& terminal::operator=(const terminal& b) throw(error){
-    (void)b;
+    _alc = b._alc;
+    _prof = b._prof;
+    _fil = b._fil;
+    _st = b._st;
+    
+    nodeterm **_taux = new nodeterm*[b._mida];
+    int i = 0;
+    while(i < b._mida) {
+        _taux[i] = b._taula[i];
+        ++i;
+    }
+    _taula = _taux;
+
+    _mida = b._mida;
+    _cat = b._cat;
+    _quants = b._quants;
+    _num_ops = b._num_ops;
+    _espera = b._espera;
     return *this;
 }
 
@@ -43,22 +93,91 @@ terminal::~terminal() throw(){}
     d'emmagatzematge seguint l'ordre que indiqui l'estratègia que s'està
     usant. Finalment, genera un error si ja existís a la terminal un
     contenidor amb una matrícula idèntica que la del contenidor c. */
+
+// Cost: O(n⁴)
 void terminal::insereix_contenidor(const contenidor &c) throw(error){
-    if(not _cat->existeix(c.matricula())) {
-        if(_mida < _quants) { 
-            if(_st == FIRST_FIT) {
-                this->insereix_ff(c); //Insereix a la terminal si hi cap, sinó ho envia a area d'espera. Un cop sap la ubi l'introdueix a cataleg.
-            }
-            else {
-                this->insereix_lliure(c);
-            }
-        }
-        else {
-            _espera.push_back(c);
-            // Falta inserir al cataleg
-        }
-    }
-    else throw error(MatriculaDuplicada);
+    (void) c;
+    // if(not _cat->existeix(c.matricula())) {
+    //     if(_mida < _quants) { 
+    //         if(_st == FIRST_FIT) {
+    //             //mirar la llista de lliures y agafar el primer
+    //             for(int i=0;i<_fil;i++)
+    //                 for(int j=0;j<_prof;j++)
+    //                     for(int k=0;k<_alc;k++){
+    //                         ubicacio ubi(i,j,k);
+    //                         int posicio=hash(ubi, _mida);
+    //                         if(_taula[posicio]->_estat!=ocupat) {
+
+    //                             //comprovar si la mida del contenidor entra a la posicio
+    //                             if((c.longitud()+j)<=_prof) {
+    //                                 //Calcular la posicio al hash
+    //                                 //inserir al hash
+    //                                 _taula[posicio]->_ubi=ubi;
+    //                                 _taula[posicio]->_cont=contenidor(c);
+    //                                 _taula[posicio]->_estat=ocupat;
+
+    //                                 //liberar posicio de sobre
+    //                                 ubicacio ubisobre(i,j,k+1);
+    //                                 int posiciosobre=hash(ubisobre, _mida);
+    //                                 _taula[posiciosobre]->_estat=lliure;
+
+    //                                 //segons la mida inserir a la resta de ubicacions
+    //                                 if(c.longitud()==2){
+    //                                     ubicacio ubi2(i,j+1,k);
+    //                                     int posicio2=hash(ubi2, _mida);
+    //                                     _taula[posicio2]->_ubi=ubi2;
+    //                                     _taula[posicio2]->_cont=contenidor(c);
+    //                                     _taula[posicio2]->_estat=ocupat;
+
+    //                                     //alliberar posicio de sobre
+    //                                     ubicacio ubisobre2(i,j+1,k+1);
+    //                                     int posiciosobre2=hash(ubisobre2, _mida);
+    //                                     _taula[posiciosobre2]->_estat=lliure;
+    //                                 }
+    //                                 else if(c.longitud()==3){
+    //                                     ubicacio ubi2(i,j+1,k);
+    //                                     int posicio2=hash(ubi2, _mida);
+    //                                     _taula[posicio2]->_ubi=ubi2;
+    //                                     _taula[posicio2]->_cont=contenidor(c);
+    //                                     _taula[posicio2]->_estat=ocupat;
+
+    //                                     //liberar posicio de sobre
+    //                                     ubicacio ubisobre2(i,j+1,k+1);
+    //                                     int posiciosobre2=hash(ubisobre2, _mida);
+    //                                     _taula[posiciosobre2]->_estat=lliure;
+    //                                     ubicacio ubi3(i,j+2,k);
+    //                                     int posicio3=hash(ubi3, _mida);
+    //                                     _taula[posicio3]->_ubi=ubi3;
+    //                                     _taula[posicio3]->_cont=contenidor(c);
+    //                                     _taula[posicio3]->_estat=ocupat;
+
+    //                                     //liberar posicio de sobre
+    //                                     ubicacio ubisobre3(i,j+1,k+1);
+    //                                     int posiciosobre3=hash(ubisobre3, _mida);
+    //                                     _taula[posiciosobre3]->_estat=lliure;
+    //                                 }
+                        
+    //                                 //afegir al cataleg
+    //                                 _cat->assig(c.matricula(), ubi);
+    //                                 _quants++;
+    //                                 _num_ops++;
+
+    //                                 //comprovar si es pot afegir algun contenidor de la llista d'espera i cridar a inserir contenidor si fos el cas
+    //                                 for(list<contenidor>::const_iterator it = _espera.begin(); it != _espera.end(); ++it){
+    //                                     insereix_contenidor(*it);
+    //                                 }
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //             else {
+    //                 _espera.push_back(c);
+    //                 ubicacio ubiesp(-1, 0, 0);
+    //                 _cat->assig(c.matricula(), ubiesp);
+    //         }
+    //     }
+    // else throw error(MatriculaDuplicada);
 }
 
 /* Retira de la terminal el contenidor c la matrícula del qual és igual
@@ -74,7 +193,25 @@ void terminal::insereix_contenidor(const contenidor &c) throw(error){
     l'ordre que indiqui l'estratègia que s'està usant. Genera un error si a
     la terminal no hi ha cap contenidor la matrícula del qual sigui igual a m. */
 void terminal::retira_contenidor(const string &m) throw(error){
-    (void)m;
+    (void) m;
+    // if(_cat.existeix(m)) {
+    //     ubicacio ubi = _cat[m];
+    //     int posicio=hash(ubi);
+    //     //_taula[posicio]._cont.longitud();
+    //     for(int i = 0; i< _taula[posicio]._cont.longitud();i++){
+    //         ubicacio ubi2(ubi.filera(),ubi.placa()+i,ubi.pis()+1);
+    //         int posicio2=hash(ubi2);
+    //         if(_taula[posicio2]._estat==ocupat){
+    //             mover_espera(ubi2);
+    //         }
+    //     }
+    //     //Eliminem de la taula i del cataleg
+    //     _taula[posicio].estat=retirat;
+    //     _cat.elimina(_taula[posicio]._cont);
+    //     _quants--;
+    //     _num_ops++;
+    // }
+    // else throw error(MatriculaDuplicada);
 }
 
 /* Retorna la ubicació <i, j, k> del contenidor la matrícula del qual és
@@ -84,44 +221,38 @@ void terminal::retira_contenidor(const string &m) throw(error){
     matrícula igual a m.
     Cal recordar que si un contenidor té més de 10 peus, la seva ubicació
     correspon a la plaça que tingui el número de plaça més petit. */
+
+// Cost: O(log n)
 ubicacio terminal::on(const string &m) const throw(){
     ubicacio u(-1, -1, -1);
-    (void)m;
-    // if(_cat->existeix(m)) {
-    //     bool trobat = false;
-    //     int i = 0;
-    //     unsigned long ini = util::h(m);
-    //     unsigned long pos = ini%_mida;
-    //     while(not trobat and _taula[pos]->_est != terminal::lliure) {
-    //         if(_taula[pos]->_est == terminal::ocupat and _taula[pos]->_con.matricula() == m) {
-    //             u = _taula[pos]._ubi;
-    //             trobat = true;
-    //         }
-    //         else {
-    //             ++i;
-    //             pos = (ini+i)%_mida;
-    //         }
-    //     } 
-    //     if(not trobat) {
-    //         for(int i = 0; i < _espera.size() and not trobat; ++i) {
-    //             if(_espera[i].matricula() == m) {
-    //                 ubicacio uae(-1, 0, 0);
-    //                 u = uae;
-    //                 trobat = true;
-    //             }
-    //         }
-    //     }
-    // }
+    if(_cat->existeix(m)){
+        u = (*_cat) [m];
+    }
     return u;
 }
 
 /* Retorna la longitud del contenidor la matrícula del qual és igual
     a m. Genera un error si no existeix un contenidor a la terminal
     la matrícula del qual sigui igual a m. */
+
+// Cost: O(1)
 nat terminal::longitud(const string &m) const throw(error){
-    //return _cat[m]; // falta el throw!!!!
-    (void)m;
-    return 0;
+    if(not _cat->existeix(m)) throw error(MatriculaInexistent);
+    nat i = 0;
+    ubicacio u = on(m);
+    if(u.filera() == -1 and u.placa() == 0 and u.pis() == 0) {
+        list<contenidor>::const_iterator prin = _espera.begin();
+        list<contenidor>::const_iterator fi = _espera.end();
+        contenidor c = busca_espera(prin, fi, m);
+        i = c.longitud();
+    }
+    else {
+        ubicacio u = this->on(m);
+        int pos = hash(u, this->_mida);
+        nodeterm *n = _taula[pos];
+        i = n->_cont.longitud();
+    }
+    return i;
 }
 
 /* Retorna la matrícula del contenidor que ocupa la ubicació u = <i, j, k>
@@ -132,11 +263,19 @@ nat terminal::longitud(const string &m) const throw(error){
     la cadena buida) pot succeir que u != t.on(m), ja que un contenidor pot 
     ocupar diverses places i la seva ubicació es correspon amb la de la
     plaça ocupada amb número de plaça més baix. */
-void terminal::contenidor_ocupa(const ubicacio &u, string &m) const throw(error){
-    (void)u;
-    (void)m;
 
-}  
+// Cost: O(1)
+void terminal::contenidor_ocupa(const ubicacio &u, string &m) const throw(error){
+    if((u.filera() < 0 or u.filera() >= this->_fil) and 
+        (u.placa() < 0 or u.placa() >= this->_prof) and
+        (u.pis() < 0 or u.pis() >= this->_alc)) {
+        throw error(UbicacioNoMagatzem);
+    }
+    int pos = hash(u, this->_mida);
+    nodeterm *n = _taula[pos];
+    if(n != NULL) m = n->_cont.matricula();
+    else m = "";
+}
 
 /* Retorna el nombre de places de la terminal que en aquest instant
     només hi cabrien un contenidor de 10 peus, però no un de més llarg.
@@ -156,36 +295,48 @@ nat terminal::fragmentacio() const throw(){
     retirar directament un contenidor de l'àrea d'emmagatzematge.
     En canvi no requereix cap operació de grua inserir o
     retirar directament un contenidor de l'àrea d'espera. */
+
+// Cost: O(1)
 nat terminal::ops_grua() const throw(){
     return _num_ops;
 }
 
 /* Retorna la llista de les matrícules de tots els contenidors
     de l'àrea d'espera de la terminal, en ordre alfabètic creixent. */
+// Cost: O(n)
 void terminal::area_espera(list<string> &l) const throw(){
-    (void)l;
+    //l.insert(l.begin(),_espera.begin(),_espera.end());
+    //l.sort(sort_by_name());
+    (void) l;
 }
 
 /* Retorna el número de fileres de la terminal. */
+// Cost: O(1)
 nat terminal::num_fileres() const throw(){
     return _fil;
 }
 
 /* Retorna el número de places per filera de la terminal. */
+// Cost: O(1)
 nat terminal::num_places() const throw(){
     return _prof;
 }
 
 /* Retorna l'alçada màxima d'apilament de la terminal. */
+// Cost: O(1)
 nat terminal::num_pisos() const throw(){
     return _alc;
 }
 
 /* Retorna l'estratègia d'inserció i retirada de contenidors de
     la terminal. */
+// Cost: O(1)
 terminal::estrategia terminal::quina_estrategia() const throw(){
     return _st;
 }
+
+
+// Mètodes privats
 
 void terminal::insereix_ff(const contenidor &c) {
     (void)c;
@@ -193,4 +344,45 @@ void terminal::insereix_ff(const contenidor &c) {
 
 void terminal::insereix_lliure(const contenidor &c) {
     (void)c;
+}
+
+// Cost: O(n)
+contenidor terminal::busca_espera(list<contenidor>::const_iterator prin, list<contenidor>::const_iterator fi, const string &m) {
+    bool trobat = false;
+    contenidor c = *prin;
+    while(prin != fi and not trobat) {
+        if(c.matricula() == m) trobat = true;
+        else { 
+            c = *prin;
+            ++prin;
+        }
+    }
+    return c;
+}
+
+// void terminal::mover_espera(const ubicació &u); {
+//     if ubi lliure {
+//         mou area_espera;
+//     }
+//     else {
+//         if cont.longitud() == 10 {
+//             mira ubi adalt;  // Crida recursiva
+//             treu el cont;
+//         }
+//         else if cont.long() == 20 {
+//             mira costats; // Crida recursiva
+//             mira adalt; // Crida recursiva
+//             treu cont:
+//         }
+//         else if cont.long() == 30 {
+//             mira costats o 3 endevant o 3 endarrera;
+//             mira adalt;
+//             treu cont;
+//         }
+//     }
+// }
+
+// Cost: O(1)
+int terminal::hash(const ubicacio &k, int mida) throw() {
+    return (k.filera()*100 + k.placa()*10 + k.pis()) % mida;
 }

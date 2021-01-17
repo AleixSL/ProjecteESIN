@@ -1,5 +1,8 @@
-// Aquesta classe tindrà l'estructura d'un diccionari, ja que usa una clau i un valor per a estar ordenat. Crec que la millor manera de representar-lo és com un AVL.
-
+/* Aquesta classe tindrà l'estructura d'un diccionari, ja que usa una clau i un valor per a estar ordenat. 
+   Crec que la millor manera de representar-lo és com un AVL.
+   Més tard ens en vam adonar que la millor manera era fer-ho com una hash table, però no ens ha donat temps
+   a canviar-ho.
+*/
 struct node {
     node *_fesq;
     node *_fdret;
@@ -11,6 +14,9 @@ struct node {
 node *_arrel;
 nat _mida;
 nat _elems;
+
+
+// Mètodes privats
 
 // Inserció recursiva de la clau k i el valor v.
 static node* insereix_node(node *n, const string &k, const Valor &v);

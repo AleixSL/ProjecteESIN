@@ -1,64 +1,60 @@
 /*
-        #######################
-        · Ha de tindre n fileres, m places i h d'alçada.
-        · Ha de guardar una estrategia.
-        · Ha de tindre un catàleg de contenidors.
-        · Una estructura que ha de tindre una àrea d'emmagatzematge:
-            - Una estructura com un mapa --> hash table
-            - I una estructura pels forats lliures del mapa --> ja té estat la hash table que usem
-        · Una estructura que ha de tindre una àrea d'espera --> usar list de stl (única excepció...)
-        #######################
 
         #######################
-        · Possibles solucions:
-            · Hash table: 
-                - bona per a cerques, insercions i eliminacions on el cost és O(1).
-                - A l'hora de crear-la el cost es O(n) on n es el num d'elements, però no es crearan moltes terminals...
 
-            o....
+        Estructures usades
 
-            - Catàleg
-            - Array tridimensional on guardar els contenidors
+            - Catàleg amb matrícules i ubicacions
+            - Hash table que emula una àrea d'emmagatzematge de contenidors. 
             - Àrea d'espera (llista de std)
-            - Llista llocs buits --> array?
+            - Llista amb nodes de llocs buits 
 
         #######################       
-
-        Atès que les operacions insereix_contenidor i retira_contenidor poden
-        involucrar el moviment de varis contenidors des de l’àrea d’espera a l’àrea d’emma-
-        gatzematge, resultaria ineficient o molt complicat garantir que la o les estructures de
-        dades que representen la terminal quedin en el seu estat original si es produís un er-
-        ror de memòria dinàmica durant un pas intermedi de l’execució. Per aquesta raó, i
-        excepcionalment, la vostra implementació d’aquests dos mètodes no tindrà que deixar
-        necessàriament inalterada l’estructura de dades en el cas que es produeixi un error de
-        manca de memòria dinàmica. Si es produeix algun altre tipus d’error, la regla sí que
-        s’aplica, ja que aquests altres errors poden ser fàcilment verificats abans de procedir a la
-        modificació de l’estructura.
 */
 
-enum Estat {lliure, ocupat, retirat};
+enum Estat{lliure, ocupat, retirat};
 
-struct node_hash {
-    ubicacio _ubi;
-    contenidor _con;
-    Estat _est;
+// Estructura que conté les ubicacions buides de la terminal.
+struct nodelliure {
+    nodelliure *seg;
+    nodelliure *ant;
+    ubicacio u;
 };
 
-node_hash** _taula;
-int _mida;                  // Mida de la taula.
-int _alc, _prof, _fil;      // Alçada, profunditat i fileres de la taula.
-int _quants;                // Número de contenidors de la taula.
-int _num_ops;               // Número d'operacions de la grua de la terminal.
-cataleg<int> *_cat;         // Catàleg de contenidors.
-terminal::estrategia _st;   // Estrategia que usa la terminal.
-list<contenidor> _espera;   // Llista d'espera de la terminal.
+nodelliure *_prim;
 
-/*
-Insereix un contenidor amb l'estrategia First Fit.
-*/
+// Estructura que emula l'àrea d'emmagatzematge.
+struct nodeterm {
+    ubicacio _ubi;
+    contenidor _cont;
+    Estat _estat;
+};
+
+nodeterm **_taula;
+
+int _mida;                      // Mida de la taula.
+int _alc, _prof, _fil;          // Alçada, profunditat i fileres de la taula.
+int _quants;                    // Número de contenidors de la taula.
+int _num_ops;                   // Número d'operacions de la grua de la terminal.
+cataleg<ubicacio> *_cat;        // Catàleg amb matrícules i ubicacions.
+terminal::estrategia _st;       // Estrategia que usa la terminal.
+list<contenidor> _espera;       // Llista d'espera de la terminal.
+
+
+
+// Mètodes privats
+
+//Insereix un contenidor amb l'estrategia First Fit.
 static void insereix_ff(const contenidor &c);
 
-/*
-Insereix un contenidor amb l'estrategia Lliure.
-*/
+//Insereix un contenidor amb l'estrategia Lliure.
 static void insereix_lliure(const contenidor &c);
+
+// Busca el contenidor amb la matrícula m 
+static contenidor busca_espera(list<contenidor>::const_iterator prin, list<contenidor>::const_iterator fi, const string &m);
+
+// Funció de hash a partir d'una ubicació i la mida de la taula.
+static int hash(const ubicacio &k, int mida) throw();
+
+// Mou el contenidor de la ubicació passada per paràmetre. També mira els contenidors adjacents.
+// static void mover_espera(const ubicació &u);
